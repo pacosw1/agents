@@ -11,6 +11,9 @@
 		0D4DE75E28C12E3F0028DFFF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4DE75D28C12E3F0028DFFF /* ContentView.swift */; };
 		0D4DE76028C12E3F0028DFFF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D4DE75F28C12E3F0028DFFF /* Assets.xcassets */; };
 		0D4DE76328C12E3F0028DFFF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D4DE76228C12E3F0028DFFF /* Preview Assets.xcassets */; };
+		0D4DE76A28C12E750028DFFF /* GameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4DE76928C12E750028DFFF /* GameModel.swift */; };
+		0D4DE76C28C1A0C30028DFFF /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4DE76B28C1A0C30028DFFF /* SearchModel.swift */; };
+		0D4DE76E28C1C9950028DFFF /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4DE76D28C1C9950028DFFF /* Timer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +22,9 @@
 		0D4DE75D28C12E3F0028DFFF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0D4DE75F28C12E3F0028DFFF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0D4DE76228C12E3F0028DFFF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0D4DE76928C12E750028DFFF /* GameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModel.swift; sourceTree = "<group>"; };
+		0D4DE76B28C1A0C30028DFFF /* SearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
+		0D4DE76D28C1C9950028DFFF /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,8 +59,11 @@
 			children = (
 				0D4DE75B28C12E3F0028DFFF /* SmartAlgosApp.swift */,
 				0D4DE75D28C12E3F0028DFFF /* ContentView.swift */,
+				0D4DE76B28C1A0C30028DFFF /* SearchModel.swift */,
 				0D4DE75F28C12E3F0028DFFF /* Assets.xcassets */,
 				0D4DE76128C12E3F0028DFFF /* Preview Content */,
+				0D4DE76928C12E750028DFFF /* GameModel.swift */,
+				0D4DE76D28C1C9950028DFFF /* Timer.swift */,
 			);
 			path = SmartAlgos;
 			sourceTree = "<group>";
@@ -139,6 +148,9 @@
 			files = (
 				0D4DE75E28C12E3F0028DFFF /* ContentView.swift in Sources */,
 				0D4DE75C28C12E3F0028DFFF /* SmartAlgosApp.swift in Sources */,
+				0D4DE76A28C12E750028DFFF /* GameModel.swift in Sources */,
+				0D4DE76E28C1C9950028DFFF /* Timer.swift in Sources */,
+				0D4DE76C28C1A0C30028DFFF /* SearchModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

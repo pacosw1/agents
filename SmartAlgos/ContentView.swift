@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     
     
-    @StateObject var game = GameModel(size: 40)
+    @StateObject var game = GameModel(size: 30)
     var body: some View {
         
         
@@ -20,10 +20,10 @@ struct ContentView: View {
             Text(game.state.rawValue)
     
         Grid {
-            ForEach(0..<40) { i in
+            ForEach(0..<30) { i in
                 
                 GridRow {
-                    ForEach(0..<40) { j in
+                    ForEach(0..<30) { j in
                         SlotView(slot: game.grid[i][j], playerState: game.playerState)
                     }
                 }
@@ -119,9 +119,9 @@ struct SlotView: View {
         case .visited:
             return .green
         case .wall:
-            return .primary
+            return .black
         case .path:
-            return .secondary
+            return .white.opacity(0.8)
         case .flag:
             return .pink
         }
@@ -130,7 +130,15 @@ struct SlotView: View {
     
     var body: some View {
         ZStack {
-           content
+            if slot.state == .visited {
+                Color.white
+                    .overlay {
+                        Color.green.opacity(0.6)
+                    }
+            } else {
+                content
+            }
+          
 //            if slot.state == .flag {
 //                Image(systemName: "flag")
 //            }

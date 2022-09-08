@@ -46,7 +46,7 @@ class TimerModel: ObservableObject {
 
 struct TimerExtension: ViewModifier {
     var lastUpdate: Int64
-    var interval: Double = 0.01
+    var interval: Double = 0.001
     var action: () -> Bool
     @StateObject private var model = TimerModel()
     

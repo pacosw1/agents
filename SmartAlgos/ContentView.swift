@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     
     
-    @StateObject var game = GameModel(size: 30)
+    @StateObject var game = GameModel(size: 38)
     var body: some View {
         
         
@@ -20,10 +20,10 @@ struct ContentView: View {
             Text(game.state.rawValue)
     
         Grid {
-            ForEach(0..<30) { i in
+            ForEach(0..<38) { i in
                 
                 GridRow {
-                    ForEach(0..<30) { j in
+                    ForEach(0..<38) { j in
                         SlotView(slot: game.grid[i][j], playerState: game.playerState)
                     }
                 }
@@ -35,11 +35,14 @@ struct ContentView: View {
             
             VStack(alignment: .leading) {
                 
-                HStack {
+                VStack {
                   
                     
-                    Toggle("breath first", isOn: $game.breathFirst)
-                    Spacer()
+                    if !game.informed {
+                        Toggle("breath first", isOn: $game.breathFirst)
+                    }
+                    Toggle("Informed Search", isOn: $game.informed)
+
                 }
                 
                 Divider()

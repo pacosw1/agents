@@ -30,11 +30,13 @@ struct GridSlot: Identifiable, Hashable {
     var id: UUID = UUID()
     var state: SlotType
     var icon: String = ""
+    var score: Double = 0
 }
 
 struct GridItem {
     var i: Int
     var j: Int
+    var score: Double = pow(2, 1000)
 }
 
 
@@ -62,7 +64,10 @@ class GameModel: ObservableObject {
     @Published var loading: Bool = false
     @Published var lastUpdate: Int64 = Date.now.timestamp()
     @Published var agentLocation = GridItem(i: 0, j: 0)
+    @Published var informed: Bool = false
     
+    
+    var flagLocation =  GridItem(i: 0, j: 0)
     var scanIndex = 0
     
     var playerState: PlayerState = .moving
@@ -77,7 +82,10 @@ class GameModel: ObservableObject {
         self.state = .generatingWalls
         
         self.placeFlag()
-//        self.print()
+        self.placeAgent()
+//
+        
+        print("flag at")
     }
     
     
@@ -115,9 +123,7 @@ class GameModel: ObservableObject {
             }
         }
     }
-    
 
-    
     func movePlayer() {
         if queue.isEmpty {
             playerState = .done
@@ -125,8 +131,14 @@ class GameModel: ObservableObject {
         }
         
         if self.breathFirst {
+            if informed {
+                queue = queue.sorted { $0.score < $1.score}
+            }
             agentLocation = queue.removeFirst()
         } else {
+            if informed {
+                queue = queue.sorted { $0.score > $1.score}
+            }
             agentLocation = queue.popLast()!
         }
         
@@ -134,7 +146,6 @@ class GameModel: ObservableObject {
         
         playerState = .checkForFlag
     }
-    
     
     func updateIcon(icon: String, i: Int, j: Int) {
         grid[i][j].icon = icon
@@ -168,47 +179,15 @@ class GameModel: ObservableObject {
         playerState = .scanning
     }
     
+    func targetScore(point: GridItem, target: GridItem) -> Double {
+        let leftAbs = pow(Double(point.i - target.i), 2)
+        let rightAbs = pow(Double(point.j - target.j), 2)
+        print ("Distance from \(point.i), \(point.j) to \(target.i), \(target.j) = \(sqrt(leftAbs + rightAbs))")
+        return sqrt(leftAbs + rightAbs)
+
+    }
     
     func scanPaths() {
-//        let i = agentLocation.i
-//        let j = agentLocation.j
-//
-//        let possiblePaths = [
-//            GridItem(i: i - 1, j: j), // top
-//            GridItem(i: i - 1, j: j - 1), // top left diagonal
-//            GridItem(i: i, j: j - 1), // left
-//            GridItem(i: i + 1, j: j - 1), // bot left diagonal
-//            GridItem(i: i + 1, j: j), // bot
-//            GridItem(i: i + 1, j: j + 1), // bot right diagonal
-//            GridItem(i: i, j: j + 1), // right
-//            GridItem(i: i - 1, j: j + 1) // top right diagonal
-//        ]
-//
-//        let neighbor = possiblePaths[self.scanIndex]
-//
-//        // check if not in a corner with invalid indexes, or a wall
-//        if !isValidIndex(i: neighbor.i, j: neighbor.j) {
-//            scanIndex += 1
-//            return
-//        }
-//
-//        let slot = grid[neighbor.i][neighbor.j]
-//
-//        if slot.state == .wall || slot.state == .visited {
-//            scanIndex += 1
-//            return
-//        }
-//
-//        queue.append(neighbor)
-//
-//        self.updateSlot(state: .scanning, i: neighbor.i, j: neighbor.j)
-//        scanIndex += 1
-//
-//        if scanIndex < possiblePaths.count {
-//            playerState = .moving
-//            scanIndex = 0
-//        }
-        
         let i = agentLocation.i
         let j = agentLocation.j
         
@@ -246,67 +225,33 @@ class GameModel: ObservableObject {
             }
             
             
-            queue.append(neighbor)
+            var scoredNeighbor = GridItem(i: neighbor.i, j: neighbor.j)
+            scoredNeighbor.score = targetScore(point: scoredNeighbor, target: self.flagLocation)
+            self.grid[neighbor.i][neighbor.j].score = scoredNeighbor.score
+
+            queue.append(scoredNeighbor)
         }
         
         playerState = .moving
     }
     
-    
     func currentSlot() -> GridSlot {
         return self.grid[agentLocation.i][agentLocation.j]
     }
     
-    
-    
     func search() {
+        self.running = true
         queue.append(self.agentLocation)
         
-        while (!queue.isEmpty) {
-            
-            if self.breathFirst {
-                agentLocation = queue.removeFirst()
-            } else {
-                agentLocation = queue.popLast()!
-            }
-            let slot = self.grid[agentLocation.i][agentLocation.j]
-            
-            
-//            grid[agentLocation.i][agentLocation.j].state = .player
-            
-            // check if we found objective
-            if slot.state == .flag {
-                state = .found
-                updateSlot(state: .player, i: agentLocation.i, j: agentLocation.j)
-                self.running = false
-                self.playerState = .done
-                return
-            }
-            
-            // add valid children (valid only)
-            self.addNeighbors()
-            
-            if state == .found {
-                return
-            }
+        while playerState != .done {
+            _ = self.makeMove()
         }
-        
-        if state != .found {
-            state = .unreachable
-        }
-        
-        self.running = false
-        self.playerState = .done
         
     }
-    
 
-    
-    
     func updateSlot(state: SlotType, i: Int, j: Int) {
         grid[i][j].state = state
     }
-    
     
     func addNeighbors() {
         let i = agentLocation.i
@@ -346,8 +291,11 @@ class GameModel: ObservableObject {
                 self.updateSlot(state: .visited, i: neighbor.i, j: neighbor.j)
             }
             
-            
-            queue.append(neighbor)
+            var scoredNeighbor = GridItem(i: neighbor.i, j: neighbor.j)
+            scoredNeighbor.score = targetScore(point: scoredNeighbor, target: self.flagLocation)
+            self.grid[neighbor.i][neighbor.j].score = scoredNeighbor.score
+
+            queue.append(scoredNeighbor)
         }
         
     }
@@ -356,7 +304,6 @@ class GameModel: ObservableObject {
     func isValidIndex(i: Int, j: Int) -> Bool {
         return i >= 0 && i < size && j >= 0 && j < size
     }
-    
     
     init(size: Int) {
         self.walls = (size*size) / 3
@@ -372,6 +319,7 @@ class GameModel: ObservableObject {
     }
     
     func reset() {
+        self.remove(value: .player)
         self.running = false
         self.walls = (size*size) / 3
         self.size = size
@@ -381,19 +329,14 @@ class GameModel: ObservableObject {
         
         self.queue = []
         
-        agentLocation = GridItem(i: 0, j: 0)
-        self.updateSlot(state: .player, i: 0, j: 0)
         playerState = .moving
-        
         self.generateWalls()
-        
-
     }
-    
     
     
     func removeFlag() {
         self.remove(value: .flag)
+        self.flagLocation = GridItem(i: 0, j: 0)
     }
     func removeWalls() {
         self.remove(value: .wall)
@@ -421,6 +364,7 @@ class GameModel: ObservableObject {
     }
     
     func placeFlag() {
+        remove(value: .flag)
         var placed: Bool = false
         var attempts: Int = 0
 
@@ -428,6 +372,22 @@ class GameModel: ObservableObject {
             placed = self.attemptSlotPlacement(value: .flag)
             attempts += 1
         }
+        
+        print("placed flag at (\(flagLocation.i) \(flagLocation.j))")
+//        self.state = .awaitingInput
+    }
+    
+    func placeAgent() {
+        remove(value: .player)
+        var placed: Bool = false
+        var attempts: Int = 0
+
+        while !placed && attempts < 1000  {
+            placed = self.attemptSlotPlacement(value: .player)
+            attempts += 1
+        }
+        
+        print("placed agent at (\(flagLocation.i) \(flagLocation.j))")
 //        self.state = .awaitingInput
     }
     
@@ -440,10 +400,16 @@ class GameModel: ObservableObject {
             return false
         }
         
+        if value == .flag {
+            flagLocation = GridItem(i: i, j: j)
+        }
+        else if value == .player {
+            agentLocation = GridItem(i: i, j: j)
+        }
+        
         self.grid[i][j].state = value
         
         return true
     }
-    
-    
+
 }

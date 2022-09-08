@@ -29,10 +29,6 @@ struct ContentView: View {
                 }
             }
         }
-            
-            
-        
-            
             VStack(alignment: .leading) {
                 
                 VStack {
@@ -55,30 +51,25 @@ struct ContentView: View {
                     
                     
                     Button("generate flag") {
-                        game.removeFlag()
                         game.placeFlag()
                     }
                 }
                 Divider()
                 HStack {
-                    
-                    
-                    
-                    
                    
                     Button("Reset") {
                         game.reset()
                     }
                     Spacer()
                 
-        
-                    
+
                     Button("Start") {
                         game.start()
                     }
                     
                     Button("Instant Solve") {
                         game.search()
+                        game.markPath()
                     }
                 }
                 .padding(.top, 50)
